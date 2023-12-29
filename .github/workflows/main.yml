@@ -45,7 +45,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          cd /home/mjs/CI-CD
+          cd mjs/CI-CD
           git pull origin main
           docker compose -f docker-compose.yml down
           docker rmi ci-cd:latest --force
