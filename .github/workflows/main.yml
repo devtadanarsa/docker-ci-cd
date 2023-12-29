@@ -38,7 +38,7 @@ jobs:
         tags: devtaaa/docker-ci-cd
         
     - name: login ssh and deploy
-      uses: devtadanarsa/ssh-action@v1.0.1
+      uses: appleboy/ssh-action@v1.0.1
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
