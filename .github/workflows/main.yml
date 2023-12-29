@@ -1,0 +1,53 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: CI-CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js 14
+      uses: actions/setup-node@v3
+      with:
+        node-version: 14
+        cache: 'npm'
+        
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+      
+    - name: Build and push docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: devtaaa/docker-ci-cd
+        
+    - name: login ssh and deploy
+      uses: devtadanarsa/ssh-action@v1.0.1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /home/mjs/CI-CD
+          git pull origin main
+          docker compose -f docker-compose.yml down
+          docker rmi ci-cd:latest --force
+          docker compose -f docker-compose.yml up -d
+      
