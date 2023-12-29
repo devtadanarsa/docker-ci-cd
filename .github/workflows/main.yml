@@ -47,7 +47,4 @@ jobs:
         script: |
           cd mjs/CI-CD
           git pull origin main
-          docker compose -f docker-compose.yml down
-          docker rmi ci-cd:latest --force
-          docker compose -f docker-compose.yml up -d
       
